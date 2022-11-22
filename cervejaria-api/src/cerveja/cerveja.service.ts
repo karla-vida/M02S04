@@ -1,4 +1,5 @@
 import { ConflictException, Injectable } from '@nestjs/common';
+import { start } from 'repl';
 import { Database } from 'src/database/database';
 import { Cerveja } from './cerveja.entity';
 
@@ -41,19 +42,28 @@ export class CervejaService {
     }
   }
 
-  public async atualizarCerveja(cervejaBuscada: Cerveja): Promise<Cerveja> {
+  public async atualizarCerveja(cerveja: Cerveja) {
     const cervejas = await this.database.getCervejas();
-    console.log(cervejaBuscada.nome.toLowerCase());
-    const novaLista = cervejas.filter(
-      (cerveja) =>
-        cerveja.nome.toLowerCase() !== cervejaBuscada.nome.toLowerCase(),
+    const cervejaExistente = cervejas.filter(
+      (cervejaExiste) =>
+        cervejaExiste.nome.toLowerCase() == cerveja.nome.toLowerCase(),
     );
-    novaLista.forEach((element) => {
-      console.log('element' + element);
-    });
-    novaLista.push(cervejaBuscada);
-    await this.database.gravarCervejas(novaLista);
-    return cervejaBuscada;
+    console.log(cervejaExistente.length);
+    if (cervejaExistente.length > 0) {
+      const novaLista = cervejas.filter(
+        (cervejaAtualizada) =>
+          cervejaAtualizada.nome.toLowerCase() != cerveja.nome.toLowerCase(),
+      );
+
+      novaLista.push(cerveja);
+      await this.database.gravarCervejas(novaLista);
+      return cerveja;
+    } else {
+      throw new ConflictException({
+        statusCode: 409,
+        message: 'Nome da cerveja já existe',
+      });
+    }
   }
 
   public async apagarCerveja(nome: string) {

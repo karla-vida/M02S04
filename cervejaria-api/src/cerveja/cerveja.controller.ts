@@ -57,16 +57,16 @@ export class CervejaController {
   public async atualizarCerveja(
     @Body() cerveja: Cerveja,
   ): Promise<NestResponse> {
-    console.log('entrou atualizar 11');
+    /*
+
     const cervejaChecar = await this.service.getCerveja(cerveja.nome);
-    console.log('entrou atualizar');
     if (!cervejaChecar) {
       throw new NotFoundException({
         statusCode: 404,
         message: 'Cerveja não encontrada',
       });
     }
-    console.log('antes do atualizar');
+*/
     const cervejaAtualizada = await this.service.atualizarCerveja(cerveja);
     return new NestResponseBuilder()
       .withStatus(HttpStatus.CREATED)
@@ -79,7 +79,6 @@ export class CervejaController {
   @HttpCode(204)
   public async apagar(@Param('nomeCerveja') nome: string) {
     const cerveja = await this.service.getCerveja(nome);
-
     if (!cerveja) {
       throw new NotFoundException({
         statusCode: 404,
